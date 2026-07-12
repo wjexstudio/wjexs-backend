@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Quest {
+  id          String    @id @default(uuid())
+  projectId   String    // Name of the GitHub Repo
+  title       String
+  description String?
+  mode        String    @default("do_later") // 'do_now', 'do_later', 'monitor', 'reminder'
+  priority    Int       @default(0)
+  dueDate     DateTime?
+  status      String    @default("pending")  // 'pending', 'in_progress', 'completed', 'archived'
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
