@@ -1,21 +1,31 @@
-app = "wjexs-backend"
-primary_region = "sin"
+# fly.toml app configuration file generated for wjexs-backend-studio-2026 on 2026-07-14T00:16:28+07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'wjexs-backend-studio-2026'
+primary_region = 'sin'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
 
 [env]
-  PORT = "8080"
-  KB_ROOT = "/data/knowledge-base"
+  KB_ROOT = '/data/knowledge-base'
+  PORT = '8080'
 
-[mounts]
-  source = "kb_data"
-  destination = "/data"
+[[mounts]]
+  source = 'kb_data'
+  destination = '/data'
 
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
+  processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
+  memory_mb = 256
