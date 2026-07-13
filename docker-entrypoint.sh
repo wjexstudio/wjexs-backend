@@ -8,9 +8,10 @@ if [ ! -d "/data/knowledge-base" ]; then
   
   if [ ! -z "$GITHUB_TOKEN" ]; then
     echo "Cloning knowledge-base from GitHub..."
-    git clone https://${GITHUB_TOKEN}@github.com/wjexstudio/knowledge-base.git /data/knowledge-base-temp
-    cp -r /data/knowledge-base-temp/* /data/knowledge-base/
-    rm -rf /data/knowledge-base-temp
+    git clone --depth 1 https://${GITHUB_TOKEN}@github.com/wjexstudio/knowledge-base.git /tmp/knowledge-base-temp
+    rm -rf /tmp/knowledge-base-temp/ARCHIVE
+    cp -r /tmp/knowledge-base-temp/* /data/knowledge-base/
+    rm -rf /tmp/knowledge-base-temp
   else
     echo "No GITHUB_TOKEN provided. Creating empty 12 Realms structure..."
     mkdir -p "/data/knowledge-base/INBOX"
