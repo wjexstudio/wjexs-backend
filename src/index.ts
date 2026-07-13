@@ -6,6 +6,7 @@ import questsRouter from './routes/quests';
 import charactersRouter from './routes/characters';
 import libraryRouter from './routes/library';
 import skillsRouter from './routes/skills';
+import webhooksRouter from './routes/webhooks';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -18,6 +19,7 @@ app.use('/api/v1/quests', questsRouter);
 app.use('/api/v1/characters', charactersRouter);
 app.use('/api/v1/library', libraryRouter);
 app.use('/api/v1/dashboard/skills', skillsRouter);
+app.use('/api/v1/webhooks', webhooksRouter);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', service: 'wjexs-backend' });
