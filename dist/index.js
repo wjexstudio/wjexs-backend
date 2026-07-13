@@ -14,6 +14,7 @@ const skills_1 = __importDefault(require("./routes/skills"));
 const webhooks_1 = __importDefault(require("./routes/webhooks"));
 const gates_1 = __importDefault(require("./routes/gates"));
 const diaryReviews_1 = __importDefault(require("./routes/diaryReviews"));
+const activity_1 = __importDefault(require("./routes/activity"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 8080;
 app.use((0, cors_1.default)());
@@ -25,6 +26,7 @@ app.use('/api/v1/library', library_1.default);
 app.use('/api/v1/dashboard/skills', skills_1.default);
 app.use('/api/v1/dashboard/gates', gates_1.default);
 app.use('/api/v1/dashboard/diary-reviews', diaryReviews_1.default);
+app.use('/api/v1/dashboard/activity', activity_1.default);
 app.use('/api/v1/webhooks', webhooks_1.default);
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', service: 'wjexs-backend' });
