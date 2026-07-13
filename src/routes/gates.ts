@@ -7,9 +7,9 @@ import { EventEmitter } from 'events';
 const router = Router();
 export const gateEvents = new EventEmitter();
 
-const OS_DIR = path.join(os.homedir(), 'projects', 'wjexstudio-os');
+const OS_DIR = process.env.OS_ROOT || path.join(os.homedir(), 'projects', 'wjexstudio-os');
 const AGENTS_MD_PATH = path.join(OS_DIR, 'AGENTS.md');
-const CONFIG_DIR = path.join(os.homedir(), 'knowledge-base', 'config');
+const CONFIG_DIR = path.join(process.env.KB_ROOT || path.join(os.homedir(), 'knowledge-base'), 'config');
 const GATES_STATE_PATH = path.join(CONFIG_DIR, 'gates_state.json');
 
 // Ensure config dir exists

@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 
 const router = Router();
-const kbPath = path.join(os.homedir(), 'knowledge-base');
+const kbPath = process.env.KB_ROOT || path.join(os.homedir(), 'knowledge-base');
 
 router.get('/realms', async (req, res) => {
   try {

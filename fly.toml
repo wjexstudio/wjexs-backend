@@ -11,6 +11,7 @@ primary_region = 'sin'
 
 [env]
   KB_ROOT = '/data/knowledge-base'
+  OS_ROOT = '/data/wjexstudio-os'
   PORT = '8080'
 
 [[mounts]]

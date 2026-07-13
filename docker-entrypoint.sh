@@ -12,6 +12,13 @@ if [ ! -d "/data/knowledge-base" ]; then
     rm -rf /tmp/knowledge-base-temp/ARCHIVE
     cp -r /tmp/knowledge-base-temp/* /data/knowledge-base/
     rm -rf /tmp/knowledge-base-temp
+    
+    echo "Cloning wjexstudio-os from GitHub..."
+    mkdir -p /data/wjexstudio-os
+    git clone --depth 1 https://${GITHUB_TOKEN}@github.com/wjexstudio/wjexstudio-os.git /tmp/os-temp
+    cp -r /tmp/os-temp/* /data/wjexstudio-os/
+    cp /tmp/os-temp/.* /data/wjexstudio-os/ 2>/dev/null || true
+    rm -rf /tmp/os-temp
   else
     echo "No GITHUB_TOKEN provided. Creating empty 12 Realms structure..."
     mkdir -p "/data/knowledge-base/INBOX"

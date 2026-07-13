@@ -5,7 +5,7 @@ import os from 'os';
 import { createRepoIssue } from '../services/githubService';
 
 const router = Router();
-const OS_DIR = path.join(os.homedir(), 'projects', 'wjexstudio-os');
+const OS_DIR = process.env.OS_ROOT || path.join(os.homedir(), 'projects', 'wjexstudio-os');
 const LOGS_DIR = path.join(OS_DIR, 'sessions', 'logs');
 
 // List available diary logs

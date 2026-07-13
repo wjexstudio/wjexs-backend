@@ -4,7 +4,7 @@ import path from 'path';
 import os from 'os';
 
 const router = Router();
-const OS_DIR = path.join(os.homedir(), 'projects', 'wjexstudio-os');
+const OS_DIR = process.env.OS_ROOT || path.join(os.homedir(), 'projects', 'wjexstudio-os');
 const CHANGELOG_PATH = path.join(OS_DIR, 'CHANGELOG.md');
 
 router.get('/', async (req, res) => {
