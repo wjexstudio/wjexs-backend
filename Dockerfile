@@ -17,6 +17,7 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 ENV PORT=8080
+ENV NODE_OPTIONS="--max-old-space-size=200"
 EXPOSE 8080
 
 ENTRYPOINT ["docker-entrypoint.sh"]
