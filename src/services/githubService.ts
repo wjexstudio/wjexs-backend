@@ -209,3 +209,137 @@ export const updateRepoFile = async (repoName: string, filePath: string, newCont
   
   return await res.json();
 };
+
+// ==========================================
+// NEW: Issues Management
+// ==========================================
+export const getRepoIssues = async (repoName: string) => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GITHUB_TOKEN is missing');
+
+  const userRes = await fetch('https://api.github.com/user', {
+    headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  const owner = (await userRes.json()).login;
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues?state=all&sort=updated&direction=desc`, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Failed to fetch issues: ${errText}`);
+  }
+  
+  return await res.json();
+};
+
+export const createRepoIssue = async (repoName: string, title: string, body: string) => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GITHUB_TOKEN is missing');
+
+  const userRes = await fetch('https://api.github.com/user', {
+    headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  const owner = (await userRes.json()).login;
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'wjexstudio-os-backend', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title, body })
+  });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Failed to create issue: ${errText}`);
+  }
+  
+  return await res.json();
+};
+
+export const updateRepoIssue = async (repoName: string, issueNumber: number, title: string, body: string, state?: string) => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GITHUB_TOKEN is missing');
+
+  const userRes = await fetch('https://api.github.com/user', {
+    headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  const owner = (await userRes.json()).login;
+
+  const payload: any = { title, body };
+  if (state) payload.state = state;
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues/${issueNumber}`, {
+    method: 'PATCH',
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'wjexstudio-os-backend', 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Failed to update issue: ${errText}`);
+  }
+  
+  return await res.json();
+};
+
+// ==========================================
+// CHARACTERS API (from wjexstudio-os/.agents)
+// ==========================================
+export const getCharacters = async () => {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GITHUB_TOKEN is missing');
+
+  const userRes = await fetch('https://api.github.com/user', {
+    headers: { 'Authorization': `Bearer ${token}`, 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  const owner = (await userRes.json()).login;
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/wjexstudio-os/contents/.agents`, {
+    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'wjexstudio-os-backend' }
+  });
+  
+  if (!res.ok) throw new Error('Failed to fetch agents directory');
+  const items = await res.json();
+  
+  const agents = [];
+  for (const item of items) {
+    if (item.type === 'dir' && item.name !== 'skills') {
+      // Basic info
+      let status = 'Active';
+      // In a real app we might fetch CHARTER.md to get full details here, 
+      // but to save API calls, we'll just return the names and fetch details individually later, 
+      // or we can fetch them all via GraphQL in a single batch if needed.
+      // For now, return basic stub. We will fetch CHARTER.md in getCharacter.
+      agents.push({
+        id: item.name,
+        name: item.name,
+        status: status,
+        path: item.path
+      });
+    }
+  }
+  return agents;
+};
+
+export const getCharacter = async (id: string) => {
+  const fileData = await getRepoFile('wjexstudio-os', `.agents/${id}/CHARTER.md`);
+  return { id, charter: fileData.content, sha: fileData.sha };
+};
+
+export const updateCharacter = async (id: string, charterContent: string, sha: string | null) => {
+  return await updateRepoFile('wjexstudio-os', `.agents/${id}/CHARTER.md`, charterContent, sha, `Update Agent: ${id}`);
+};
+
+export const createCharacter = async (id: string, charterContent: string) => {
+  // Creating a new file in github creates the directory automatically
+  return await updateRepoFile('wjexstudio-os', `.agents/${id}/CHARTER.md`, charterContent, null, `Create Agent: ${id}`);
+};
+
+export const archiveCharacter = async (id: string) => {
+  // Archive could be just renaming the folder to .agents/archived_agents/{id} 
+  // or just updating a status in CHARTER.md. Let's append an Archived status to CHARTER.md for simplicity
+  const { charter, sha } = await getCharacter(id);
+  const newContent = charter + '\n\n## Status\nArchived';
+  return await updateCharacter(id, newContent, sha);
+};
