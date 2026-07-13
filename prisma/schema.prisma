@@ -6,15 +6,91 @@ datasource db {
   provider = "postgresql"
 }
 
+// -----------------------------------------------------
+// 1. PROJECTS & QUESTS (หน้า Projects, Quests)
+// -----------------------------------------------------
+model Project {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  description   String?
+  githubRepo    String?   // ผูกกับ GitHub
+  status        String    @default("active") // active, archived
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  quests        Quest[]
+}
+
 model Quest {
   id          String    @id @default(uuid())
-  projectId   String    // Name of the GitHub Repo
+  projectId   String
   title       String
   description String?
-  mode        String    @default("do_later") // 'do_now', 'do_later', 'monitor', 'reminder'
+  mode        String    @default("do_later") 
   priority    Int       @default(0)
   dueDate     DateTime?
-  status      String    @default("pending")  // 'pending', 'in_progress', 'completed', 'archived'
+  status      String    @default("pending")  
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------------------
+// 2. SKILLS & CHARACTERS METRICS (หน้า Skills, Characters)
+// หมายเหตุ: โครงสร้างหลักอ่านจาก Markdown แต่สถิติเก็บในนี้
+// -----------------------------------------------------
+model SkillMetric {
+  id          String    @id // ตรงกับชื่อโฟลเดอร์สกิล เช่น 'brainstorming'
+  usageCount  Int       @default(0)
+  stars       Int       @default(0)
+  lastUsedAt  DateTime  @default(now())
+}
+
+model CharacterMetric {
+  id          String    @id // ตรงกับชื่อ Agent เช่น 'Lewis', 'Yod'
+  tasksDone   Int       @default(0)
+  activeHours Float     @default(0.0)
+  lastActive  DateTime  @default(now())
+}
+
+// -----------------------------------------------------
+// 3. ACTIVITY & DIARY (หน้า Activity, Diary Review, Dashboard)
+// -----------------------------------------------------
+model SystemActivity {
+  id          String    @id @default(uuid())
+  agentId     String    // ใครเป็นคนทำ (Lewis, Yod, User)
+  action      String    // เช่น 'created_quest', 'used_skill'
+  targetId    String?   // อ้างอิง ID ของสิ่งที่ถูกกระทำ
+  details     Json?     // รายละเอียดเพิ่มเติม
+  createdAt   DateTime  @default(now())
+}
+
+model DiaryEntry {
+  id          String    @id @default(uuid())
+  date        DateTime  @unique // บันทึกของวันไหน
+  summary     String    // สรุปการทำงานรายวัน
+  mood        String?   // สภาวะของระบบ
+  createdAt   DateTime  @default(now())
+}
+
+// -----------------------------------------------------
+// 4. GATES & LIBRARY (หน้า Gates, Library)
+// -----------------------------------------------------
+model GateEvent {
+  id          String    @id @default(uuid())
+  gateName    String    // เช่น 'Fact Gate', 'Quality Gate'
+  status      String    // 'passed', 'failed', 'pending'
+  reviewedBy  String    // เช่น 'Tim', 'Tracy'
+  notes       String?
+  createdAt   DateTime  @default(now())
+}
+
+model LibraryItem {
+  id          String    @id @default(uuid())
+  title       String
+  category    String    // 'book', 'article', 'video'
+  url         String?
+  status      String    @default("unread") // unread, reading, completed
+  createdAt   DateTime  @default(now())
 }
