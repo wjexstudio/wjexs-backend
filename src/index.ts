@@ -8,6 +8,7 @@ import libraryRouter from './routes/library';
 import skillsRouter from './routes/skills';
 import webhooksRouter from './routes/webhooks';
 import gatesRouter from './routes/gates';
+import diaryReviewsRouter from './routes/diaryReviews';
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -21,6 +22,7 @@ app.use('/api/v1/characters', charactersRouter);
 app.use('/api/v1/library', libraryRouter);
 app.use('/api/v1/dashboard/skills', skillsRouter);
 app.use('/api/v1/dashboard/gates', gatesRouter);
+app.use('/api/v1/dashboard/diary-reviews', diaryReviewsRouter);
 app.use('/api/v1/webhooks', webhooksRouter);
 
 app.get('/api/health', (req, res) => {
